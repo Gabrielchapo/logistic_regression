@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-import sys
 
 def sigmoid(s):
     return 1/(1 + np.exp(-s))
@@ -31,26 +29,13 @@ class LogisticRegression:
         X = (X - self.mean) / self.sigma
         return np.dot(X, self.weights[:-1]) + self.weights[-1]
 
-if __name__ == "__main__":
-    try:
-        df = pd.read_csv(sys.argv[1], index_col=0)
-    except:
-        exit("Error: Something went wrong with the dataset")
+    def save(self):
+        dict = {"weights":self.weights, "mean":self.mean, "sigma":self.sigma}
+        np.save("resources/weights.npy", dict)
 
-    houses = df["Hogwarts House"].tolist()
-    l = ['Gryffindor', 'Ravenclaw', 'Slytherin', 'Hufflepuff']
-    Y = np.array([np.array([1,0,0,0]) if x == 'Gryffindor' else np.array([0,1,0,0]) if x == 'Ravenclaw' else np.array([0,0,1,0]) if x == 'Slytherin' else np.array([0,0,0,1]) for x in houses])
-    df = df.drop(columns=["Hogwarts House","First Name","Last Name","Birthday"]).fillna(0)
-    X = pd.get_dummies(df).to_numpy()
-
-    model = LogisticRegression()
-
-    model.fit(X, Y, 0.05, 3000, verbose=1)
-    tmp = model.predict(X)
-    for i,x in enumerate(tmp):
-        print(houses[i], np.argmax(x), end=" ")
-        if houses[i] == l[np.argmax(x)]:
-            print("CORRECT")
-        else:
-            print("FALSE")
+    def load(self):
+        dict = np.load("resources/weights.npy", allow_pickle='TRUE').item()
+        self.sigma = dict["sigma"]
+        self.mean = dict["mean"]
+        self.weights = dict["weights"]
 
