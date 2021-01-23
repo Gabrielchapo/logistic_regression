@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     model = LogisticRegression()
 
-    model.fit(X, Y, 0.05, 3000, verbose=1)
+    model.cross_validation(X, Y, 0.10, 3000, nb_folds=10)
     model.save()
 
 
